@@ -1,1 +1,2 @@
-%Amplitude Filter
+%Amplitude Compression Filter
+
