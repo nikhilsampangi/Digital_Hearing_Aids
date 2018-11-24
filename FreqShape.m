@@ -7,19 +7,18 @@ function y = FreqShape(x,g_max,tr_v,fsr)
 % of gain function will be the concatenation of preset piecewise functions
 % The transition frequencies from one piecewise function to another can
 % be set by the user in the elements of the tr_v  
-% The final frequency used will be fsr/2 since that's the highest frequency that the input signal will contain.
 % The output will be the filtered signal
 
 % x - an input sound signal
 % g_max - the maximum gain that will be applied to the signal
 % tr_v - 4 element vector that has the values of where the gain changes to the next piecewise function
-% fs - the sampling frequency of the input signal
+% fsr - the sampling frequency of the input signal
 
 
-f1 = tr_v(1);
-f2 = tr_v(2);
-f3 = tr_v(3);
-f4 = tr_v(4);
+first = tr_v(1);
+second = tr_v(2);
+third = tr_v(3);
+fourth = tr_v(4);
 
 x_length = length(x);
 n = nextpow2(x_length);
@@ -29,47 +28,49 @@ X = fft(x,N);
 gain = zeros(N,1);
 
 % Sets the gain for the first stage of frequencies
-firstC = (.3*(g_max-1))/f1;
+
+firstC = (.3*(g_max-1))/first;
 k=0;
-while(k/N <= f1/fsr)
+while(k/N <= first/fsr)
    gain(k+1) = firstC*k/(N*T) + 1;
    gain(N-k) = gain(k+1);
    k=k+1;
-end;
+end
 
 % Sets the gain for the second stage of frequencies
-secondC = firstC*f1 +1;    
-secondC2 = (f2-f1)/5;
-while(k/N <= f2/fsr)
-   gain(k+1) = 1 + (secondC-1)*exp(-((k/(N*T))-f1)/secondC2);
+secondC = firstC*first +1;    
+secondC2 = (second-first)/5;
+
+while(k/N <= second/fsr)
+   gain(k+1) = 1 + (secondC-1)*exp(-((k/(N*T))-first)/secondC2);
    gain(N-k) = gain(k+1);
    k=k+1;
-end;
+end
 
 % Sets the gain for the third stage of frequencies
-thirdC = 1 + (secondC-1)*exp(-f2/secondC2);  
-thirdC2 = (f3-f2)/5;
-while(k/N <= f3/fsr)
-   gain(k+1) = g_max + (thirdC-g_max)*exp(-((k/(N*T)-f2))/thirdC2);
+thirdC = 1 + (secondC-1)*exp(-second/secondC2);  
+thirdC2 = (third-second)/5;
+while(k/N <= third/fsr)
+   gain(k+1) = g_max + (thirdC-g_max)*exp(-((k/(N*T)-second))/thirdC2);
    gain(N-k) = gain(k+1);
    k=k+1;
-end;
+end
 
 % Sets the gain for the fourth stage of frequencies
-while(k/N <= f4/fsr)
+while(k/N <= fourth/fsr)
    gain(k+1) = g_max;
    gain(N-k) = gain(k+1);
    k=k+1;
-end;
+end
 
 % Sets the gain for the fifth stage of frequencies
 fifthC = g_max;                
-fifthC2 = (fsr/2-f4)/5;
+fifthC2 = (fsr/2-fourth)/5;
 while(k/N <= .5)
-   gain(k+1) = 1 + (fifthC-1)*exp(-((k/(N*T))-f4)/fifthC2);
+   gain(k+1) = 1 + (fifthC-1)*exp(-((k/(N*T))-fourth)/fifthC2);
    gain(N-k) = gain(k+1);
    k=k+1;
-end;
+end
 k_v = (0:N-1)/N;
 plot(k_v,gain);
 title('Gain');%entire filter transfer function
