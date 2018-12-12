@@ -27,12 +27,11 @@ X = fft(x,N);
 
 gain = zeros(N,1);
 
-
-
-firstC = (0.3*(g_max-1))/tr_1; 
 % Sets the gain for the first stage of frequencies
+
+firstC = (.3*(g_max-1))/tr_1;
 k=0;
-while(k/N <= tr_1/fsr) % N: x length ; fsr: sampling rate frequency
+while(k/N <= tr_1/fsr) % k
    gain(k+1) = firstC*k/(N*T) + 1;
    gain(N-k) = gain(k+1);
    k=k+1;
@@ -80,8 +79,8 @@ while(k/N <= .5)
 end
 
 k_v = (0:N-1)/N;
-%plot(k_v,gain);
-%title('Gain');%entire filter transfer function
+plot(k_v,gain);
+title('Gain');%entire filter transfer function
 figure;%non-redundant filter transfer function
 
 k_v = k_v*fsr;
@@ -97,5 +96,9 @@ y = real(ifft(Y,N));
 y = y(1:x_length);
 t=(0:1/fsr:(x_length-1)/fsr);
 figure;
+subplot(2,1,1);
+plot(t,y,'r');
+title('Signal after addition of gain');
+subplot(2,1,2);
 plot(t,x);
-title('Adjusted Signal after addition of gain');
+title('Adjusted Signal');

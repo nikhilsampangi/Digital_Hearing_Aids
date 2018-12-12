@@ -13,7 +13,7 @@ function y = AmplitudeFilter(input, Psat, Fs)
 x= input;
 len= Fs*0.1;
 iter= floor(length(x)/len);
-Plow=0.010;
+Plow=0.008;
  
 for rg=0:1:iter
  start=rg*len+1;
@@ -46,4 +46,4 @@ y = real(ifft(Y,N));
 z = y(1:en-start+1);
 sig_out(start:en)=z;
 end
-y = sig_out*10000; % Multiplying 10000 is just increasing the intensity of the o/p signal
+y = sig_out*10000; % Multiplying 5000 is just increasing the intensity of the o/p signal
